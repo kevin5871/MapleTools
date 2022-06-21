@@ -10,6 +10,8 @@ from curses.ascii import isdigit
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 import tkinter
 import sys
+import pyglet
+import os
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets/options")
@@ -18,6 +20,7 @@ ASSETS_PATH = OUTPUT_PATH / Path("./assets/options")
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+pyglet.font.add_file(os.path.join(OUTPUT_PATH, "assets/NEXON Lv2 Gothic.ttf"))
 
 window = Tk()
 window.overrideredirect(1)

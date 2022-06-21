@@ -14,6 +14,7 @@ from GetCharInfo import GetCharInfo
 import regex
 import math
 import csv
+import pyglet
 
 #https://www.inven.co.kr/board/maple/2304/26769
 
@@ -33,6 +34,8 @@ opacity = float(optionvar[1])
 #print(opacity)
 tpfile = tempfile.TemporaryDirectory()
 Data = None
+
+pyglet.font.add_file(os.path.join(OUTPUT_PATH, "assets/NEXON Lv2 Gothic.ttf"))
 
 def close() :
     tpfile.cleanup()

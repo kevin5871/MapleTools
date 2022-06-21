@@ -13,6 +13,8 @@ from tkinter import Checkbutton, Tk, Canvas, Entry, Button, PhotoImage, Toplevel
 import sys
 import csv
 import levelupcore
+import pyglet
+import os
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets/level")
@@ -25,6 +27,8 @@ def option_close() :
     global optionwindow
     optionwindow.destroy()
     optionwindow = None
+
+pyglet.font.add_file(os.path.join(OUTPUT_PATH, "assets/NEXON Lv2 Gothic.ttf"))
 
 
 optionslist = {'Coupon':'없음', 'MVP':0, 'Potion':0, 'ExGold':0, 'Merlink':'없음', 'HolyS' :0, 'Ring':0,'Zero':'없음','Union':0,'Hyper':0,'Pendant':'없음','Dice':0,'PC':0,'Bud':0,'etc':0}
