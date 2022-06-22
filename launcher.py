@@ -21,7 +21,7 @@ canvas = Canvas(window, bg='#ffffff', height=400, width=300, bd=0, highlightthic
 canvas.place(x=0,y=0)
 canvas.create_rectangle(0,0,300,400,fill='#FFA13D',outline="")
 canvas.create_text(75, 30, anchor="nw", text="MapleTools", fill="#FFFFFF", font=("NEXON Lv2 Gothic", 30 * -1))
-canvas.create_text(110, 65, anchor="nw", text="Ver 1.0 / KMS 1.2.365", fill="#FFFFFF", font=("NEXON Lv2 Gothic", 12 * -1))
+canvas.create_text(100, 65, anchor="nw", text="Ver 1.0.1 / KMS 1.2.365", fill="#FFFFFF", font=("NEXON Lv2 Gothic", 12 * -1))
 
 window.title('MapleTools')
 window.geometry("300x400")
