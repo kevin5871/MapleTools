@@ -15,6 +15,7 @@ import csv
 import levelupcore
 import pyglet
 import os
+from PIL import Image, ImageTk
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets/level")
@@ -35,6 +36,9 @@ optionslist = {'Coupon':'없음', 'MVP':0, 'Potion':0, 'ExGold':0, 'Merlink':'�
 canvas2 = None
 buffstate = dict()
 var1 = dict()
+
+MainColor = None
+SubColor = None
 
 def edit_option() :
     global hap, canvas2
@@ -115,7 +119,7 @@ def beforeoption() :
         showoption() 
 
 def showoption() :
-    global optionwindow, var1, optionslist, hap, canvas2
+    global optionwindow, var1, optionslist, hap, canvas2, buttontk
     x = window.winfo_x()
     y = window.winfo_y()
     # OptionWindow Settings
@@ -133,9 +137,11 @@ def showoption() :
     canvas2 = Canvas(optionwindow, bg = "#FFFFFF", height = 260, width = 500, bd = 0, highlightthickness = 0, relief = "ridge")
     canvas2.place(x = 0, y = 0)
     
-    canvas2.create_rectangle(0.0, 0.0, 500.0, 30.0, fill="#FFA13D", outline="")
+    canvas2.create_rectangle(0.0, 0.0, 500.0, 30.0, fill=MainColor, outline="")
+    canvas2.create_rectangle(0.0,30.0,500.0,32.0,fill=SubColor,outline="")
+    canvas2.create_rectangle(0.0,0.0,498.0,258.0,fill='', outline=MainColor, width=3)
     canvas2.create_text(20.0, 5, anchor="nw", text="MapleTools", fill="#FFFFFF", font=("NEXON Lv2 Gothic", 18 * -1))
-    button_4 = Button(optionwindow, image=button_image_3, borderwidth=0, highlightthickness=0, command=lambda: option_close())
+    button_4 = Button(optionwindow, image=buttontk, borderwidth=0, highlightthickness=0, command=lambda: option_close())
     button_4.place(x=445.0, y=2.5, width=50.0, height=25.0)
 
     button_5 = Button(optionwindow, image=button_image_5, borderwidth=0, highlightthickness=0, command=lambda: edit_option())
@@ -240,8 +246,30 @@ def move_me(event):
     except:
         pass
 
+def OpenData() :
+    global Data, Data2, Data3, Data4
+    tmpfile = open(OUTPUT_PATH / Path("./assets/data/1to199.csv"), encoding='utf-8')
+    DataList = csv.reader(tmpfile, delimiter=",", doublequote=False, lineterminator="\r\n", quotechar="'", skipinitialspace=True)
+    Data = list(DataList)
+    tmpfile.close()
 
-tmpfile = open(OUTPUT_PATH / Path("./assets/variables"))
+    tmpfile = open(OUTPUT_PATH / Path("./assets/data/200to300.csv"), encoding='utf-8')
+    DataList = csv.reader(tmpfile, delimiter=",", doublequote=False, lineterminator="\r\n", quotechar="'", skipinitialspace=True)
+    Data2 = list(DataList)
+    tmpfile.close()
+
+    tmpfile = open(OUTPUT_PATH / Path("./assets/data/exp.csv"), encoding='utf-8')
+    DataList = csv.reader(tmpfile, delimiter=",", doublequote=False, lineterminator="\r\n", quotechar="'", skipinitialspace=True)
+    Data3 = list(DataList)
+    tmpfile.close()
+
+    tmpfile = open(OUTPUT_PATH / Path("./assets/data/theme.csv"), encoding='utf-8')
+    DataList = csv.reader(tmpfile, delimiter=",", doublequote=False, lineterminator="\r\n", quotechar="'", skipinitialspace=True)
+    Data4 = list(DataList)
+    tmpfile.close()
+    states()
+
+tmpfile = open(OUTPUT_PATH / Path("./assets/variables"), encoding='utf-8')
 tmplist = tmpfile.read().splitlines()
 optionvar = list()
 for i in range(0,len(tmplist)) :
@@ -249,7 +277,37 @@ for i in range(0,len(tmplist)) :
         if tmplist[i][0] != '#' :
             optionvar.append(tmplist[i])
 opacity = float(optionvar[1])
+theme = str(optionvar[2])
 
+
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
+def SetTheme() :
+    global Data4, MainColor, SubColor, canvas, buttontk, buttontk
+    for i in range(1, len(Data4), 1) :
+        if Data4[i][0] == theme :
+            MainColor = Data4[i][1]
+            SubColor = Data4[i][2]
+    if MainColor == None :
+        print('Error')
+
+    canvas.create_rectangle(0.0, 0.0, 400.0, 30.0, fill=MainColor, outline="")
+    canvas.create_rectangle(0.0,30.0,400.0,32.0,fill=SubColor,outline="")
+    canvas.create_rectangle(0.0,0.0,398.0,258.0,fill='', outline=MainColor, width=3)
+    canvas.create_text(20.0, 5, anchor="nw", text="MapleTools", fill="#FFFFFF", font=("NEXON Lv2 Gothic", 18 * -1))
+    
+    button_image_3 = Image.open(relative_to_assets("button_3.png")).convert('RGB')
+    for i in range(0,button_image_3.size[0]) :
+        for j in range(0, button_image_3.size[1]) :
+            data = button_image_3.getpixel((i,j))
+            if(data == hex_to_rgb('#FFA13D')) :
+                button_image_3.putpixel((i,j), hex_to_rgb(MainColor))
+    buttontk = ImageTk.PhotoImage(image=button_image_3)
+    button_3 = Button(image= buttontk, borderwidth=0, highlightthickness=0, command= lambda : sys.exit(0))
+    button_3.place(x=345.0, y=2.5, width=50.0, height=25.0)
 
 window = Tk()
 optionwindow = None
@@ -266,16 +324,15 @@ tmpfile.close()
 Data = list()
 Data2 = list()
 Data3 = list()
+Data4 = list()
 IfStar = tkinter.IntVar()
 IfExp = tkinter.IntVar()
 
 canvas = Canvas(window, bg = "#FFFFFF", height = 260, width = 400, bd = 0, highlightthickness = 0, relief = "ridge")
 canvas.place(x = 0, y = 0)
 canvas.create_rectangle(0.0, 150.0, 400.0, 151.0, fill="#C4C4C4", outline="")
-canvas.create_rectangle(0.0, 0.0, 400.0, 30.0, fill="#FFA13D", outline="")
 
 canvas.create_text(175.0, 35.0, anchor="nw", text="사냥터", fill="#393939", font=("NEXON Lv2 Gothic", 18 * -1))
-canvas.create_text(20.0, 5, anchor="nw", text="MapleTools", fill="#FFFFFF", font=("NEXON Lv2 Gothic", 18 * -1))
 
 button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
 button_1 = Button(image=button_image_1, borderwidth=0, highlightthickness=0, command=lambda:  entryrefresh(str(int(level.get())-1)) if int(level.get()) > 1 else None, relief="flat")
@@ -284,10 +341,6 @@ button_1.place(x=70.0, y=70.0, width=50.0, height=25.0)
 button_image_2 = PhotoImage(file=relative_to_assets("button_2.png"))
 button_2 = Button(image=button_image_2, borderwidth=0, highlightthickness=0, command=lambda: entryrefresh(str(int(level.get())+1)) if int(level.get()) < 300 else None, relief="flat")
 button_2.place(x=280.0, y=70.0, width=50.0, height=25.0)
-
-button_image_3 = PhotoImage(file=relative_to_assets("button_3.png"))
-button_3 = Button(image=button_image_3, borderwidth=0, highlightthickness=0, command= lambda : sys.exit(0))
-button_3.place(x=345.0, y=2.5, width=50.0, height=25.0)
 
 button_image_4 = PhotoImage(file=relative_to_assets("button_4.png"))
 button_4 = Button(image=button_image_4, borderwidth=0, highlightthickness=0, command= lambda : beforeoption())
@@ -482,25 +535,8 @@ window.bind('<Leave>', on_end_hover)
 window.bind('<B1-Motion>', Dragging)
 window.bind("<Configure>", move_me)
 #tkinter.Button(canvas, text="옵션 >>", font=("NEXON Lv2 Gothic", 12*-1), mand=showoption).place(x=0, y=0)
-def OpenData() :
-    global Data, Data2, Data3
-    tmpfile = open(OUTPUT_PATH / Path("./assets/data/1to199.csv"), encoding='utf-8')
-    DataList = csv.reader(tmpfile, delimiter=",", doublequote=False, lineterminator="\r\n", quotechar="'", skipinitialspace=True)
-    Data = list(DataList)
-    tmpfile.close()
-
-    tmpfile = open(OUTPUT_PATH / Path("./assets/data/200to300.csv"), encoding='utf-8')
-    DataList = csv.reader(tmpfile, delimiter=",", doublequote=False, lineterminator="\r\n", quotechar="'", skipinitialspace=True)
-    Data2 = list(DataList)
-    tmpfile.close()
-
-    tmpfile = open(OUTPUT_PATH / Path("./assets/data/exp.csv"), encoding='utf-8')
-    DataList = csv.reader(tmpfile, delimiter=",", doublequote=False, lineterminator="\r\n", quotechar="'", skipinitialspace=True)
-    Data3 = list(DataList)
-    tmpfile.close()
-
-    states()
 
 OpenData()
+SetTheme()
 lvlmain()
 window.mainloop()

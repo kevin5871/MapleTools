@@ -7,15 +7,51 @@ from pathlib import Path
 from curses.ascii import isdigit
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, ttk
 import tkinter
 import sys
 import pyglet
 import os
+import csv
+from PIL import Image, ImageTk
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets/options")
 
+tmpfile = open(OUTPUT_PATH / Path("./assets/variables"), 'r',encoding='utf-8')
+tmplist = tmpfile.read().splitlines()
+optionvar = list()
+for i in range(0,len(tmplist)) :
+    if len(tmplist[i]) > 0 :
+        if tmplist[i][0] != '#' :
+            optionvar.append(tmplist[i])
+
+theme = str(optionvar[2])
+
+MainColor = None
+SubColor = None
+Data = None
+
+def OpenData() :
+    global Data
+    tmpfile = open(OUTPUT_PATH / Path("./assets/data/theme.csv"), encoding='utf-8')
+    DataList = csv.reader(tmpfile, delimiter=",", doublequote=False, lineterminator="\r\n", quotechar="'", skipinitialspace=True)
+    Data = list(DataList)
+    tmpfile.close()
+
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
+def SetTheme() :
+    global Data, MainColor, SubColor
+    for i in range(1, len(Data), 1) :
+        if Data[i][0] == theme :
+            MainColor = Data[i][1]
+            SubColor = Data[i][2]
+    if MainColor == None :
+        print('Error')
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -28,16 +64,8 @@ window.overrideredirect(1)
 window.geometry("400x230")
 window.configure(bg = "#FFFFFF")
 
-tmpfile = open(OUTPUT_PATH / Path("./assets/variables"), 'r')
-tmplist = tmpfile.read().splitlines()
-optionvar = list()
-for i in range(0,len(tmplist)) :
-    if len(tmplist[i]) > 0 :
-        if tmplist[i][0] != '#' :
-            optionvar.append(tmplist[i])
-
 def savechange() :
-    tmpfile = open(OUTPUT_PATH / Path("./assets/variables"), 'w')
+    tmpfile = open(OUTPUT_PATH / Path("./assets/variables"), 'w', encoding='utf-8')
     for j in range(0, len(str(charnum.get()))) :
             if isdigit(charnum.get()[j]) != True : 
                 charnum.set(0)
@@ -57,19 +85,24 @@ def savechange() :
         opacity.set(60)
 
 
-    tmpfile.write('# Variables File\n# ============================\n# AccountID\n\n%s\n\n# Opacity\n\n%f'%(charnum.get(), (int(opacity.get())/100)))
+    tmpfile.write('# Variables File\n# ============================\n# AccountID\n\n%s\n\n# Opacity\n\n%f\n\n# ThemeName\n\n%s'%(charnum.get(), (int(opacity.get())/100), ThemeSelect.get()))
     tmpfile.close()
 
+OpenData()
+SetTheme()
 
 canvas = Canvas(window,bg = "#FFFFFF",height = 230,width = 400,bd = 0,highlightthickness = 0,relief = "ridge")
 canvas.place(x = 0, y = 0)
-canvas.create_rectangle(0.0,0.0,400.0,30.0,fill="#FFA13D",outline="")
+canvas.create_rectangle(0.0, 0.0, 400.0, 30.0, fill=MainColor, outline="")
+canvas.create_rectangle(0.0,30.0,400.0,32.0,fill=SubColor,outline="")
+canvas.create_rectangle(0.0,0.0,398.0,228.0,fill='', outline=MainColor, width=3)
 canvas.create_text(175.0,35.0,anchor="nw",text="설정",fill="#393939",font=("NEXON Lv2 Gothic", 14 * -1))
 canvas.create_text(20.0,2.5,anchor="nw",text="MapleTools",fill="#FFFFFF",font=("NEXON Lv2 Gothic", 18 * -1))
-canvas.create_text(20.0,81.0,anchor="nw",text="메이플스토리 유저 번호",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
-canvas.create_text(20.0,140.0,anchor="nw",text="투명도 (1~100)",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
+canvas.create_text(20.0,60.0,anchor="nw",text="메이플스토리 유저 번호",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
+canvas.create_text(20.0,120.0,anchor="nw",text="투명도 (1~100)",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
+canvas.create_text(20.0,155.0,anchor="nw",text="테마",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
 #canvas.create_text(180.0,209.0,anchor="nw",text="Ver : 1.0 / Developer : sfcatz",fill="#000000",font=("NEXON Lv2 Gothic", 16 * -1))
-canvas.create_text(20.0,100.0,anchor="nw",text="마이메이플>캐릭터정보 더보기>개발자보기(F12)>\n찾기(Ctrl+F) >‘value’ 입력>\n메이플ID 옆 번호 9자리 입력 (<option value=”xxxxxxxxx” ...)",fill="#AAAAAA",font=("NEXON Lv2 Gothic", 9 * -1))
+canvas.create_text(20.0,80.0,anchor="nw",text="마이메이플>캐릭터정보 더보기>개발자보기(F12)>\n찾기(Ctrl+F) >‘value’ 입력>\n메이플ID 옆 번호 9자리 입력 (<option value=”xxxxxxxxx” ...)",fill="#AAAAAA",font=("NEXON Lv2 Gothic", 9 * -1))
 
 opacity = tkinter.StringVar(value=str(float(optionvar[1])*100))
 charnum = tkinter.StringVar(value=optionvar[0])
@@ -79,21 +112,38 @@ charnum = tkinter.StringVar(value=optionvar[0])
 
 
 entry_image_1 = PhotoImage(file=relative_to_assets("entry_1.png"))
-entry_bg_1 = canvas.create_image(305.0,93.0,image=entry_image_1)
+entry_bg_1 = canvas.create_image(305.0,73.0,image=entry_image_1)
 entry_1 = Entry(bd=0,bg="#DDDDDD",highlightthickness=0, textvariable=charnum, font=("Nexon Lv2 Gothic", 16 * -1))
-entry_1.place(x=225.0,y=78.0,width=160.0,height=28.0)
+entry_1.place(x=225.0,y=58.0,width=160.0,height=28.0)
 
 entry_image_2 = PhotoImage(file=relative_to_assets("entry_2.png"))
-entry_bg_2 = canvas.create_image(305.0,148.0,image=entry_image_2)
+entry_bg_2 = canvas.create_image(305.0,128.0,image=entry_image_2)
 entry_2 = Entry(bd=0,bg="#DDDDDD",highlightthickness=0, textvariable=opacity, font=("Nexon Lv2 Gothic", 16 * -1))
-entry_2.place(x=225.0,y=133.0,width=160.0,height=28.0)
+entry_2.place(x=225.0,y=113.0,width=160.0,height=28.0)
+
+ThemeSelect = tkinter.StringVar()
+
+ThemeOption = list()
+for i in range(1, len(Data)) :
+    ThemeOption.append(Data[i][0])
+ThemeSelect.set(str(optionvar[2]))
+ttk.Combobox(window, textvariable=ThemeSelect, values=ThemeOption, font=("NEXON Lv2 Gothic",16 * -1), state="readonly", width=15).place(x=225, y=150)
+
+
 
 button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
 button_1 = Button(image=button_image_1, borderwidth=0, highlightthickness=0, command=lambda: savechange(), relief="flat")
 button_1.place(x=250.0, y=180.0, width=120.0, height=25.0)
 
-button_image_3 = PhotoImage(file=relative_to_assets("button_3.png"))
-button_3 = Button(image=button_image_3, borderwidth=0, highlightthickness=0, command= lambda : sys.exit(0))
+
+button_image_3 = Image.open(relative_to_assets("button_3.png")).convert('RGB')
+for i in range(0,button_image_3.size[0]) :
+    for j in range(0, button_image_3.size[1]) :
+        data = button_image_3.getpixel((i,j))
+        if(data == hex_to_rgb('#FFA13D')) :
+            button_image_3.putpixel((i,j), hex_to_rgb(MainColor))
+buttontk = ImageTk.PhotoImage(image=button_image_3)
+button_3 = Button(image= buttontk, borderwidth=0, highlightthickness=0, command= lambda : sys.exit(0))
 button_3.place(x=345.0, y=2.5, width=50.0, height=25.0)
 
 def SaveLastClickPos(event):
