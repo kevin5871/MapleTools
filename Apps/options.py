@@ -66,14 +66,6 @@ window.configure(bg = "#FFFFFF")
 
 def savechange() :
     tmpfile = open(OUTPUT_PATH / Path("./assets/variables"), 'w', encoding='utf-8')
-    for j in range(0, len(str(charnum.get()))) :
-            if isdigit(charnum.get()[j]) != True : 
-                charnum.set(0)
-                break
-    if len(str(charnum.get())) == 9 :
-           pass
-    else :
-        charnum.set(0)
 
     for j in range(0, len(opacity.get())) :
         if isdigit(str(opacity.get())[j]) != True :
@@ -85,7 +77,7 @@ def savechange() :
         opacity.set(60)
 
 
-    tmpfile.write('# Variables File\n# ============================\n# AccountID\n\n%s\n\n# Opacity\n\n%f\n\n# ThemeName\n\n%s'%(charnum.get(), (int(opacity.get())/100), ThemeSelect.get()))
+    tmpfile.write('# Variables File\n# ============================\n# AccountID\n\n0\n\n# Opacity\n\n%f\n\n# ThemeName\n\n%s\n\n# UseNickNameInsteadofAccountID\n\n0\n\n# NickName\n\n%s'%((int(opacity.get())/100), ThemeSelect.get(), charnum.get()))
     tmpfile.close()
 
 OpenData()
@@ -98,23 +90,22 @@ canvas.create_rectangle(0.0,30.0,400.0,32.0,fill=SubColor,outline="")
 canvas.create_rectangle(0.0,0.0,398.0,228.0,fill='', outline=MainColor, width=3)
 canvas.create_text(175.0,35.0,anchor="nw",text="설정",fill="#393939",font=("NEXON Lv2 Gothic", 14 * -1))
 canvas.create_text(20.0,2.5,anchor="nw",text="MapleTools",fill="#FFFFFF",font=("NEXON Lv2 Gothic", 18 * -1))
-canvas.create_text(20.0,60.0,anchor="nw",text="메이플스토리 유저 번호",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
+canvas.create_text(20.0,85.0,anchor="nw",text="메이플스토리 유저 닉네임",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
 canvas.create_text(20.0,120.0,anchor="nw",text="투명도 (1~100)",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
 canvas.create_text(20.0,155.0,anchor="nw",text="테마",fill="#000000",font=("NEXON Lv2 Gothic", 18 * -1))
 #canvas.create_text(180.0,209.0,anchor="nw",text="Ver : 1.0 / Developer : sfcatz",fill="#000000",font=("NEXON Lv2 Gothic", 16 * -1))
-canvas.create_text(20.0,80.0,anchor="nw",text="마이메이플>캐릭터정보 더보기>개발자보기(F12)>\n찾기(Ctrl+F) >‘value’ 입력>\n메이플ID 옆 번호 9자리 입력 (<option value=”xxxxxxxxx” ...)",fill="#AAAAAA",font=("NEXON Lv2 Gothic", 9 * -1))
 
 opacity = tkinter.StringVar(value=str(float(optionvar[1])*100))
-charnum = tkinter.StringVar(value=optionvar[0])
+charnum = tkinter.StringVar(value=optionvar[4])
 
 #charnum.trace("w", savecharnum)
 #opacity.trace("w", saveopacity)
 
 
 entry_image_1 = PhotoImage(file=relative_to_assets("entry_1.png"))
-entry_bg_1 = canvas.create_image(305.0,73.0,image=entry_image_1)
+entry_bg_1 = canvas.create_image(305.0,93.0,image=entry_image_1)
 entry_1 = Entry(bd=0,bg="#DDDDDD",highlightthickness=0, textvariable=charnum, font=("Nexon Lv2 Gothic", 16 * -1))
-entry_1.place(x=225.0,y=58.0,width=160.0,height=28.0)
+entry_1.place(x=225.0,y=78.0,width=160.0,height=28.0)
 
 entry_image_2 = PhotoImage(file=relative_to_assets("entry_2.png"))
 entry_bg_2 = canvas.create_image(305.0,128.0,image=entry_image_2)

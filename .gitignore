@@ -151,5 +151,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-test.py
 growportion_standalone.py
+test2.py

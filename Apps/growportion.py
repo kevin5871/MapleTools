@@ -11,7 +11,8 @@ from pyparsing import Char
 import requests
 import socket
 from PIL import Image, ImageTk
-from GetCharInfo import GetCharInfo
+import GetCharInfo
+import GetCharInfobyMapleGG
 import regex
 import math
 import csv
@@ -51,8 +52,16 @@ def close() :
 def charset() :
     global useDefChar
     #print(1, useDefChar.get())
-    if optionvar[0] != str(0) and socket.gethostbyname(socket.gethostname()) != '127.0.0.1' and useDefChar.get() == True :
-        char = GetCharInfo(int(optionvar[0]))
+    if socket.gethostbyname(socket.gethostname()) != '127.0.0.1' and useDefChar.get() == True :
+        if optionvar[3] != '1' and optionvar[0] != str(0):
+            # 메이플스토리 공식 api 사용 (리거시 호환)
+            char = GetCharInfo.GetCharInfo(int(optionvar[0]))
+        elif optionvar[4] != '' :
+            # 메이플지지 파싱 (정식)
+            char = GetCharInfobyMapleGG.GetCharInfo(optionvar[4])
+        else :
+            messagebox.showerror(title="Setting Error", message="설정에서 대표캐릭터 ID를 확인해주세요")
+            return ('200', '0,0', None)
         #print(char)
         #print(char['Exp'])
         a = requests.get(char['AvatarImgURL'])
@@ -73,9 +82,7 @@ def charset() :
         #print(percent)
         return (char["Lev"], str(percent), avatartk)
     else :
-        if(optionvar[0] == str(0)) :
-            messagebox.showerror(title="Setting Error", message="설정에서 대표캐릭터 ID를 확인해주세요")
-        elif(socket.gethostbyname(socket.gethostname()) == '127.0.0.1') :
+        if(socket.gethostbyname(socket.gethostname()) == '127.0.0.1') :
             messagebox.showerror(title="Network Error", message="인터넷 연결을 확인해주세요.")
         elif useDefChar.get() == True :
             messagebox.showerror(title="Error", message="일반 오류.")
@@ -286,7 +293,7 @@ buttontk = ImageTk.PhotoImage(image=button_image_3)
 button_3 = Button(image=buttontk, borderwidth=0, highlightthickness=0, command= lambda : close())
 button_3.place(x=345.0, y=2.5, width=50.0, height=25.0)
 useDefChar = tkinter.BooleanVar()
-tkinter.Checkbutton(window, variable=useDefChar, text="대표캐릭터 사용", font=("NEXON Lv2 Gothic",16 * -1), command=pre, activebackground="#FFFFFF", background="#FFFFFF").place(x=250, y=100)
+tkinter.Checkbutton(window, variable=useDefChar, text="자동으로 채우기", font=("NEXON Lv2 Gothic",16 * -1), command=pre, activebackground="#FFFFFF", background="#FFFFFF").place(x=265, y=100)
 
 # 입력창
 
