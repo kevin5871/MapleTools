@@ -1,6 +1,7 @@
 # 기본데이터 : https://github.com/icepeng/maple-calc/blob/master/src/app/grinding/models/map.ts
 # 계산데이터 : https://github.com/icepeng/maple-calc/blob/e633b80e62fcb67c0d40baf70792e85bac1600f6/src/app/grinding/containers/grinding.component.ts
 # 추가 로직 : https://github.com/icepeng/maple-calc/blob/e633b80e62fcb67c0d40baf70792e85bac1600f6/src/app/grinding/services/grinding.service.ts
+# 익스트림패치(1.2.368) : https://www.inven.co.kr/board/maple/2304/31977?category=%EC%82%AC%EB%83%A5
 
 """
 메인 로직 : 타입스크립트
@@ -145,7 +146,7 @@ def mob_bojeong(origexp, plylev, moblev) :
     return 0
 
 def calculate(level, data, option) :
-  mapgroup = ['리버스시티','츄츄아일랜드','얌얌아일랜드','레헬른','아르카나','모라스','에스페라','셀라스','문브릿지','고통의미궁','리멘','세르니움','불타는세르니','아르크스'] #,'오디움']
+  mapgroup = ['리버스시티','츄츄아일랜드','얌얌아일랜드','레헬른','아르카나','모라스','에스페라','셀라스','문브릿지','고통의미궁','리멘','세르니움','불타는세르니','아르크스', '오디움']
   i = (level-200) // 5
   appgroup = ['소멸의여로'] + mapgroup[0:i]
   usedata = list()

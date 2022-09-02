@@ -153,3 +153,4 @@ cython_debug/
 
 growportion_standalone.py
 test2.py
+Apps/levelup_standalone.py
