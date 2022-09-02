@@ -77,7 +77,7 @@ def savechange() :
         opacity.set(60)
 
 
-    tmpfile.write('# Variables File\n# ============================\n# AccountID\n\n0\n\n# Opacity\n\n%f\n\n# ThemeName\n\n%s\n\n# UseNickNameInsteadofAccountID\n\n0\n\n# NickName\n\n%s'%((int(opacity.get())/100), ThemeSelect.get(), charnum.get()))
+    tmpfile.write('# Variables File\n# ============================\n# AccountID\n\n0\n\n# Opacity\n\n%f\n\n# ThemeName\n\n%s\n\n# UseNickNameInsteadofAccountID\n\n1\n\n# NickName\n\n%s'%((int(opacity.get())/100), ThemeSelect.get(), charnum.get()))
     tmpfile.close()
 
 OpenData()
